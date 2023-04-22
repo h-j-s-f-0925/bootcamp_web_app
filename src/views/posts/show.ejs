@@ -25,13 +25,25 @@
       </form>
       <% } %>
       <span data-test="like-count"><%= likeCount %></span>
-      <form action="" method="POST" data-test="form-retweet">
-        <button type="submit" data-test="submit-retweet" class="retweet-btn retweet">
-          <span class="material-symbols-outlined">swap_horiz</span>
-        </button>
-      </form>      
-      <span data-test="retweet-count">1</span>
-      <!-- <span data-test="retweet-count"><%= likeCount %></span> -->
+
+      <!-- リツイートボタンの表示 -->
+      <!-- <%= hasLiked %> -->
+      <!-- <%= hasRetweeted %> -->
+      <% if(!hasRetweeted){ %>
+        <form action="/posts/<%= post.id %>/retweets" method="POST" data-test="form-retweet">
+          <button type="submit" data-test="submit-retweet" class="retweet-btn retweet">
+            <span class="material-symbols-outlined">swap_horiz</span>
+          </button>
+        </form>      
+      <% } else {%>
+        <form action="/posts/<%= post.id %>/retweets?_method=DELETE" method="POST" data-test="form-retweet">
+          <button type="submit" data-test="submit-retweet" class="retweet-btn has-retweeted">
+            <span class="material-symbols-outlined">swap_horiz</span>
+          </button>
+        </form>
+      <% } %>
+      <span data-test="retweet-count"><%= retweetCount%></span>
+
       <% if(post.user.id === currentUser.id) { %>
         <div class="post-menus">
           <a href="/posts/<%= post.id %>/edit" data-test="post-link-edit">Edit</a>

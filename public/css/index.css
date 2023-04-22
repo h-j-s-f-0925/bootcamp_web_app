@@ -363,6 +363,11 @@ img[data-test=post-image] {
   cursor: pointer;
 }
 
+/* 追加 */
+.like-btn.retweet {
+  color: #8899a6;
+}
+
 .has-retweeted {
   color: #19CF86;
 }
