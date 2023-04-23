@@ -6,6 +6,7 @@ import {
   getAllUsers,
   createUser,
   getUserWithPosts,
+  getUserRetweetedPosts,//追加
   getUserLikedPosts,
   getUser,
   updateUserProfile,
@@ -18,6 +19,11 @@ import {
 import {ensureCorrectUser} from "@/middlewares/current_user";
 import {body, validationResult} from "express-validator";
 import {HashPassword} from "@/lib/hash_password";
+
+// 追加
+import {
+  getAllPosts,
+} from "@/models/post";
 
 export const userRouter = express.Router();
 
@@ -61,10 +67,17 @@ userRouter.post(
 /** A page to show user details */
 userRouter.get("/:userId", ensureAuthUser, async (req, res, next) => {
   const {userId} = req.params;
-  const user = await getUserWithPosts(Number(userId));
+  // const user = await getUserWithPosts(Number(userId));//コメント化
+  const user = await getUserRetweetedPosts(Number(userId));//追加
+  console.log(user);
   if (!user) return next(new Error("Invalid error: The user is undefined."));
+  const posts = user.retweets.map(retweetItem=> retweetItem.post);//追加
+  console.log(posts);
+  const retweetedLabel = "Retweeted";//追加
   res.render("users/show", {
     user,
+    posts,//追加
+    retweetedLabel//追加
   });
 });
 
@@ -74,7 +87,7 @@ userRouter.get("/:userId/likes", ensureAuthUser, async (req, res, next) => {
   const user = await getUserLikedPosts(Number(userId));
   if (!user) return next(new Error("Invalid error: The user is undefined."));
   res.render("users/likes", {
-    user,
+    user
   });
 });
 

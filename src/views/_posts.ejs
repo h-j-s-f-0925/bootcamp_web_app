@@ -6,8 +6,10 @@
       </div>
       <div class="post-right">
         <div class="post-user-name">
-          <a href="/users/<%= post.user.id %>" data-test="post-item-user">
+          <!-- <a href="/users/<%= post.user.id %>" data-test="post-item-user"> -->
+          <a href="/users/<%= post.user.id %>" data-test="post-label">
             <%= post.user.name %>
+            <%= retweetedLabel %>
           </a>
         </div>
         <a href="/posts/<%= post.id %>" data-test="post-item-content">
