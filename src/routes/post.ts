@@ -52,7 +52,7 @@ postRouter.get("/:postId", ensureAuthUser, async (req, res, next) => {
     likeCount,
     hasLiked,
     retweetCount,
-    hasRetweeted
+    hasRetweeted,
   });
 });
 

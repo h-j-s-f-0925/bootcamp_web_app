@@ -94,7 +94,7 @@ const loadRouter = (app: Express): void => {
   app.use("/", homeRouter);
   app.use("/", authRouter);
   app.use("/users", userRouter);
-  app.use("/posts", postRouter, likeRouter,retweetRouter);
+  app.use("/posts", postRouter, likeRouter, retweetRouter);
 };
 
 const loadSecureHeaders = (app: Express): void => {

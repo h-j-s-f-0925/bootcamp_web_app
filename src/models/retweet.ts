@@ -3,7 +3,9 @@ import {databaseManager} from "@/db/index";
 
 type RetweetData = Pick<Retweet, "userId" | "postId">;
 
-export const getPostRetweetedCount = async (postId: number): Promise<number> => {
+export const getPostRetweetedCount = async (
+  postId: number
+): Promise<number> => {
   const prisma = databaseManager.getInstance();
   const count = await prisma.retweet.count({
     where: {
@@ -13,7 +15,9 @@ export const getPostRetweetedCount = async (postId: number): Promise<number> => 
   return count;
 };
 
-export const createRetweet = async (retweetData: RetweetData): Promise<Retweet> => {
+export const createRetweet = async (
+  retweetData: RetweetData
+): Promise<Retweet> => {
   const prisma = databaseManager.getInstance();
   const retweet = await prisma.retweet.create({
     data: retweetData,
@@ -21,7 +25,9 @@ export const createRetweet = async (retweetData: RetweetData): Promise<Retweet> 
   return retweet;
 };
 
-export const deleteRetweet = async (retweetData: RetweetData): Promise<Retweet> => {
+export const deleteRetweet = async (
+  retweetData: RetweetData
+): Promise<Retweet> => {
   const prisma = databaseManager.getInstance();
   const retweet = await prisma.retweet.delete({
     where: {

@@ -16,6 +16,30 @@
         <a href="<%= `/users/${user.id}/likes` %>">Likes</a>
       </li>
     </ul>
-    <%- include('../_posts', {posts: user.like.map(likeItem=> likeItem.post)}); %>
+    <div class="container" data-test="posts-container">
+      <% posts.forEach(post => { %>
+        <div class="posts-index-item" data-test="post-<%= post.id %>">
+          <div class="post-left">
+            <img src="<%= post.user.imageName %>">
+          </div>
+          <div class="post-right">
+            <div class="post-user-name">
+              <!-- <a href="/users/<%= post.user.id %>" data-test="post-item-user"> -->
+              <a href="/users/<%= post.user.id %>" data-test="post-label">
+                <%= post.user.name %>
+                <% if (user.retweets){%>
+                  <%= "retweet" %>
+                <% } else {%>
+                  <% %>
+                <% } %>
+              </a>
+            </div>
+            <a href="/posts/<%= post.id %>" data-test="post-item-content">
+              <%= post.content %>
+            </a>
+          </div>
+        </div>
+        <% }) %>
+    </div>
   </div>
 </div>
