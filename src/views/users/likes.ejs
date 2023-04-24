@@ -26,12 +26,6 @@
             <div class="post-user-name">
               <!-- <a href="/users/<%= post.user.id %>" data-test="post-item-user"> -->
               <a href="/users/<%= post.user.id %>" data-test="post-label">
-                <%= post.user.name %>
-                <% if (user.retweets){%>
-                  <%= "retweet" %>
-                <% } else {%>
-                  <% %>
-                <% } %>
               </a>
             </div>
             <a href="/posts/<%= post.id %>" data-test="post-item-content">

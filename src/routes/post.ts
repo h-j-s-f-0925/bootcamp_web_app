@@ -16,6 +16,7 @@ export const postRouter = express.Router();
 
 postRouter.get("/", ensureAuthUser, async (req, res) => {
   const postsWithUser = await getAllPosts();
+  console.log(postsWithUser);
   res.render("posts/index", {
     posts: postsWithUser,
   });
@@ -46,6 +47,7 @@ postRouter.get("/:postId", ensureAuthUser, async (req, res, next) => {
   const hasLiked = await hasUserLikedPost(currentUserId, post.id);
   const retweetCount = await getPostRetweetedCount(post.id);
   const hasRetweeted = await hasUserRetweetedPost(currentUserId, post.id);
+  console.log("hasRetweeted " + hasRetweeted);
   res.render("posts/show", {
     post,
     formatDate,

@@ -67,9 +67,9 @@ export const getPost = async (postId: number): Promise<PostWithUser | null> => {
 export const getAllPosts = async (): Promise<PostWithUser[]> => {
   const prisma = databaseManager.getInstance();
   const post = await prisma.post.findMany({
-    orderBy: {
-      createdAt: "desc",
-    },
+    orderBy: [
+      {createdAt: "desc"},
+    ],
     select: {
       id: true,
       content: true,
@@ -79,6 +79,14 @@ export const getAllPosts = async (): Promise<PostWithUser[]> => {
       user: {
         select: {
           ...selectUserColumnsWithoutPassword,
+        },
+      },
+      retweets: {
+        orderBy: {
+          createdAt: "desc",
+        },
+        select: {
+          post: true,
         },
       },
     },
