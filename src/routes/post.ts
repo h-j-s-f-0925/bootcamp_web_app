@@ -2,7 +2,6 @@ import express from "express";
 import {body, validationResult} from "express-validator";
 import {formatDate} from "@/lib/convert_date";
 import {
-  getAllPosts,
   getPost,
   createPost,
   updatePost,

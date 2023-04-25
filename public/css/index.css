@@ -534,6 +534,12 @@ input[type="checkbox"] {
 }
 
 /* users/show ================================ */
+.user-container {
+  max-width: 600px;
+  margin: 0 auto;
+  clear: both;
+}
+
 .user-show {
   text-align: center;
 }

@@ -16,8 +16,9 @@
         <a href="<%= `/users/${user.id}/likes` %>">Likes</a>
       </li>
     </ul>
-    <div class="container" data-test="posts-container">
-      <% posts.forEach(post => { %>
+    <!-- 隙間あったのでクラス名変更 -->
+    <div class="user-container" data-test="posts-container">
+      <% user.posts.forEach(post => { %>
         <div class="posts-index-item" data-test="post-<%= post.id %>">
           <div class="post-left">
             <img src="<%= post.user.imageName %>">

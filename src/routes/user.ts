@@ -5,8 +5,7 @@ import {nanoid} from "nanoid";
 import {
   getAllUsers,
   createUser,
-  getUserWithPosts,
-  getUserRetweetedPosts, //追加
+  getUserWithRetweets, //追加
   getUserLikedPosts,
   getUser,
   updateUserProfile,
@@ -19,9 +18,6 @@ import {
 import {ensureCorrectUser} from "@/middlewares/current_user";
 import {body, validationResult} from "express-validator";
 import {HashPassword} from "@/lib/hash_password";
-
-// 追加
-import {getAllPosts} from "@/models/post";
 
 export const userRouter = express.Router();
 
@@ -63,19 +59,14 @@ userRouter.post(
 );
 
 /** A page to show user details */
+// ユーザーの詳細ページで、指定されたユーザーがリツイートした投稿を含めた情報を表示する
 userRouter.get("/:userId", ensureAuthUser, async (req, res, next) => {
   const {userId} = req.params;
-  // const user = await getUserWithPosts(Number(userId));//コメント化
-  const user = await getUserRetweetedPosts(Number(userId)); //追加
-  console.log(user);
+  const user = await getUserWithRetweets(Number(userId));
   if (!user) return next(new Error("Invalid error: The user is undefined."));
-  const posts = user.retweets.map(retweetItem => retweetItem.post); //追加
-  console.log(posts);
-  const retweetedLabel = "Retweeted"; //追加
   res.render("users/show", {
     user,
-    posts, //追加
-    retweetedLabel, //追加
+    retweetedLabel: "Retweeted",
   });
 });
 

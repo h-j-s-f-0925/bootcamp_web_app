@@ -1,4 +1,4 @@
-import {User} from "@prisma/client";
+import {User, Retweet} from "@prisma/client";
 import {type PostWithUser} from "@/models/post";
 import {databaseManager} from "@/db/index";
 
@@ -123,51 +123,71 @@ export const getUserLikedPosts = async (
 };
 
 // 追加
-export const getUserRetweetedPosts = async (
+type UserWithRetweets = {
+  id: number;
+  email: string;
+  name: string;
+  imageName: string;
+  createdAt: Date;
+  updatedAt: Date;
+  retweets: Array<Retweet & {post: PostWithUser}>;
+  posts: Array<PostWithUser & {retweeted?: boolean; retweetedBy?: string}>;
+} | null;
+// 指定されたユーザーがリツイートした投稿を含めたユーザー情報を返す関数
+export const getUserWithRetweets = async (
   userId: number
-): Promise<
-  | (UserWithoutPassword & {
-      retweets: Array<{
-        post: PostWithUser;
-      }>;
-    })
-  | null
-> => {
+): Promise<UserWithRetweets> => {
   const prisma = databaseManager.getInstance();
   const user = await prisma.user.findUnique({
-    where: {
-      id: userId,
-    },
-    select: {
-      ...selectUserColumnsWithoutPassword,
+    where: {id: userId},
+    include: {
       retweets: {
         orderBy: {
-          // post: {
-          //   createdAt: "desc",
-          // },
           createdAt: "desc",
         },
-        select: {
+        include: {
           post: {
-            select: {
-              id: true,
-              content: true,
-              userId: true,
-              createdAt: true,
-              updatedAt: true,
-              user: {
-                select: {
-                  ...selectUserColumnsWithoutPassword,
-                },
-              },
+            include: {
+              user: true,
             },
           },
         },
       },
+      posts: {
+        include: {
+          user: true,
+        },
+      },
     },
   });
-  if (user === null) return null;
-  return user;
+
+  if (!user) return null;
+  // ユーザーがリツイートした投稿と、投稿した投稿を重複させたものを作成する
+  const retweetsWithLabel = user.retweets.map(retweet => ({
+    ...retweet.post,
+    retweetedBy: retweet.post.user.name,
+    createdAt: retweet.createdAt,
+    retweeted: true,
+  }));
+  const postsWithLabel = user.posts.map(post => ({
+    ...post,
+    retweeted: false,
+  }));
+  const posts = [...retweetsWithLabel, ...postsWithLabel];
+
+  // リツイートされた投稿はリツイート日時の順番で表示するようにソートする
+  const sortedPosts = posts.sort((a, b) =>
+    a.retweeted && b.retweeted
+      ? new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+      : a.createdAt > b.createdAt
+      ? -1
+      : 1
+  );
+
+  return {
+    ...user,
+    posts: sortedPosts,
+  };
 };
 
 export const getAllUsers = async (): Promise<UserWithoutPassword[]> => {
