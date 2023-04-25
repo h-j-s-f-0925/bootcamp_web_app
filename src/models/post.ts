@@ -1,4 +1,5 @@
 import {Post} from "@prisma/client";
+import {Retweet} from "@prisma/client";
 import {databaseManager} from "@/db/index";
 import {
   selectUserColumnsWithoutPassword,
@@ -67,9 +68,9 @@ export const getPost = async (postId: number): Promise<PostWithUser | null> => {
 export const getAllPosts = async (): Promise<PostWithUser[]> => {
   const prisma = databaseManager.getInstance();
   const post = await prisma.post.findMany({
-    orderBy: [
-      {createdAt: "desc"},
-    ],
+    orderBy: {
+      createdAt: "desc",
+    },
     select: {
       id: true,
       content: true,
@@ -81,15 +82,85 @@ export const getAllPosts = async (): Promise<PostWithUser[]> => {
           ...selectUserColumnsWithoutPassword,
         },
       },
-      retweets: {
-        orderBy: {
-          createdAt: "desc",
-        },
-        select: {
-          post: true,
-        },
-      },
     },
   });
   return post;
+};
+
+// type PostWithRetweets = Post & { retweets: Retweet[] };
+// export const getAllPostsWithRetweets = async (): Promise<PostWithRetweets[]> => {
+//   const prisma = databaseManager.getInstance();
+//   const posts = await prisma.post.findMany({
+//     include: {
+//       retweets: true,
+//       user:true,
+//     },
+//     orderBy: {
+//       createdAt: "desc",
+//     },
+//   });
+//   const postsWithRetweets: PostWithRetweets[] = posts.flatMap((post) => {
+//     if (post.retweets.length === 0) {
+//       return [post];
+//     } else {
+//       return [
+//         post,
+//         ...post.retweets.map((retweet) => ({
+//           ...post,
+//           retweets: [],
+//           userId: retweet.userId,
+//           createdAt: retweet.createdAt,
+//         }))
+//       ];
+//     }
+//   });
+//   postsWithRetweets.sort((a, b) => {
+//     return new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime();
+//   });
+//   return postsWithRetweets;
+// };
+
+type PostWithRetweets = Post & {retweets: Retweet[]};
+
+export const getAllPostsWithRetweets = async (): Promise<
+  PostWithRetweets[]
+> => {
+  const prisma = databaseManager.getInstance();
+  const posts = await prisma.post.findMany({
+    include: {
+      retweets: true,
+      user: true,
+    },
+    orderBy: {
+      createdAt: "desc",
+    },
+  });
+
+  const postsWithRetweets: PostWithRetweets[] = posts.flatMap(post => {
+    if (post.retweets.length === 0) {
+      return [post];
+    } else {
+      const retweets = post.retweets.map(retweet => ({
+        ...post,
+        retweets: [],
+        userId: retweet.userId,
+        createdAt: retweet.createdAt,
+      }));
+      return [...retweets, post];
+    }
+  });
+
+  postsWithRetweets.sort((a, b) => {
+    if (a.retweets.length > 0 && b.retweets.length > 0) {
+      return b.createdAt.getTime() - a.createdAt.getTime();
+    } else if (a.retweets.length > 0) {
+      return -1;
+    } else if (b.retweets.length > 0) {
+      return 1;
+    } else {
+      return b.createdAt.getTime() - a.createdAt.getTime();
+    }
+  });
+
+  return postsWithRetweets;
 };

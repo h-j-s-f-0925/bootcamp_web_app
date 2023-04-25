@@ -7,6 +7,7 @@ import {
   createPost,
   updatePost,
   deletePost,
+  getAllPostsWithRetweets,
 } from "@/models/post";
 import {getPostLikedCount, hasUserLikedPost} from "@/models/like";
 import {getPostRetweetedCount, hasUserRetweetedPost} from "@/models/retweet";
@@ -15,10 +16,14 @@ import {ensureOwnerOfPost} from "@/middlewares/current_user";
 export const postRouter = express.Router();
 
 postRouter.get("/", ensureAuthUser, async (req, res) => {
-  const postsWithUser = await getAllPosts();
-  console.log(postsWithUser);
+  // const postsWithUser = await getAllPosts();
+  const postsWithRetweet = await getAllPostsWithRetweets();
+  // const posts = [postsWithUser, postsWithRetweeet]
+
+  // console.log(postsWithRetweet);
   res.render("posts/index", {
-    posts: postsWithUser,
+    // posts: postsWithUser,
+    posts: postsWithRetweet,
   });
 });
 
